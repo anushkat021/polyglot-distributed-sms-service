@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import com.anushka.polyglot_service.blocklist.BlockListService;
 import com.anushka.polyglot_service.dto.SmsRequest;
 import com.anushka.polyglot_service.dto.SmsResponse;
+import com.anushka.polyglot_service.kafka.SmsKafkaProducer;
 import com.anushka.polyglot_service.vendor.MockVendorService;
 
 @Service
@@ -17,8 +18,8 @@ public class SmsService {
   @Autowired
   private MockVendorService vendorService;
 
-  //@Autowired
-//   private SmsKafkaProducer kafkaProducer;
+  @Autowired
+  private SmsKafkaProducer kafkaProducer;
 
   public SmsResponse sendSms(@RequestBody SmsRequest request) {
 
@@ -35,6 +36,11 @@ public class SmsService {
       //         request,
       //         vendorStatus
       // );
+      kafkaProducer.sendMessage(
+          request.getPhoneNumber() +
+          " : " +
+          request.getMessage()
+      );
 
       return new SmsResponse(vendorStatus);
   }

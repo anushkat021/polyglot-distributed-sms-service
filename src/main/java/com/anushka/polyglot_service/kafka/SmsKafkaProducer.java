@@ -1,31 +1,21 @@
 package com.anushka.polyglot_service.kafka;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
-import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.stereotype.Service;
 
-import com.anushka.polyglot_service.dto.SmsRequest;
-
+@Service
 public class SmsKafkaProducer {
-  @Autowired
-  private KafkaTemplate<String, Object> kafkaTemplate;
 
-  public void publishEvent(@RequestBody SmsRequest request,
-                            String status) {
+    @Autowired
+    private KafkaTemplate<String, String> kafkaTemplate;
 
-      Map<String, Object> event = new HashMap<>();
+    public void sendMessage(String message) {
 
-      event.put("phoneNumber",
-              request.getPhoneNumber());
+        kafkaTemplate.send("sms-topic", message);
 
-      event.put("message",
-              request.getMessage());
-
-      event.put("status", status);
-
-      kafkaTemplate.send("sms-topic", event);
-  }
+        System.out.println(
+                "Message sent to Kafka: " + message
+        );
+    }
 }
